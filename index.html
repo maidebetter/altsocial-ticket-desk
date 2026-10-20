@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>AltSocial Ticket Desk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f6f4;
+        --card: #ffffff;
+        --ink: #1c1a17;
+        --ink-2: #57534b;
+        --ink-3: #8a857c;
+        --line: #e6e3dc;
+        --orange: #e85a17;
+        --orange-soft: #f7c9a6;
+        --orange-faint: #fdeee2;
+        --track: #efede8;
+        --alert-bg: #fdecec;
+        --alert-line: #f2c1c1;
+        --alert-ink: #8c1d18;
+        --good-bg: #e8f6ec;
+        --good-line: #bfe3cb;
+        --good-ink: #14532d;
+        --grey-line: #b9b3a8;
+        --gold: #1c1a17;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #141311;
+          --card: #1e1c19;
+          --ink: #f2efe9;
+          --ink-2: #b8b2a6;
+          --ink-3: #8a857c;
+          --line: #35322c;
+          --orange: #f26f24;
+          --orange-soft: #8a4b26;
+          --orange-faint: #2c2019;
+          --track: #2b2925;
+          --alert-bg: #331d1b;
+          --alert-line: #63302c;
+          --alert-ink: #f0a49e;
+          --good-bg: #17301f;
+          --good-line: #2c5238;
+          --good-ink: #9adbb0;
+          --grey-line: #5c574e;
+          --gold: #f2efe9;
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Archivo", -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-feature-settings: "tnum" 1, "lnum" 1;
+        line-height: 1.45;
+      }
+      .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 20px 40px; }
+
+      /* ---------- header / tabs ---------- */
+      .page-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px; margin-bottom: 22px; }
+      h1 { font-size: 30px; font-weight: 900; letter-spacing: -0.02em; margin: 0; }
+      .tabs { display: inline-flex; background: var(--track); border-radius: 999px; padding: 4px; gap: 4px; }
+      .tab {
+        appearance: none; border: 0; cursor: pointer;
+        font: inherit; font-weight: 700; font-size: 15px;
+        padding: 8px 20px; border-radius: 999px;
+        background: transparent; color: var(--ink-2);
+      }
+      .tab[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 4px rgba(20,16,8,.18); }
+      .tab .d { color: var(--orange); font-weight: 800; }
+
+      /* ---------- event header ---------- */
+      .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .18em; color: var(--orange); margin: 6px 0 2px; }
+      .city { font-size: 44px; font-weight: 900; letter-spacing: -0.025em; line-height: 1.02; margin: 0; }
+      .event-line { font-size: 18px; color: var(--ink-2); margin: 6px 0 0; font-weight: 500; }
+      .asof { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; }
+      .daysout { display: flex; align-items: baseline; gap: 12px; margin: 26px 0 4px; }
+      .daysout .n { font-size: 92px; font-weight: 900; letter-spacing: -0.04em; line-height: .9; }
+      .daysout .u { font-size: 26px; font-weight: 800; letter-spacing: .06em; color: var(--ink-2); }
+
+      /* ---------- cards & sections ---------- */
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-top: 16px; }
+      .card h3 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+      .card .cap { color: var(--ink-2); font-size: 14px; margin: 8px 0 0; }
+      .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+      .chart-range { font-size: 11.5px; font-weight: 700; letter-spacing: .12em; color: var(--ink-3); white-space: nowrap; }
+
+      /* ---------- capacity bar ---------- */
+      .sold-line { font-size: 19px; font-weight: 700; margin: 2px 0 14px; }
+      .sold-line b { font-weight: 900; }
+      .bar-wrap { position: relative; padding-top: 22px; }
+      .bar { display: flex; height: 26px; border-radius: 7px; background: var(--track); overflow: visible; position: relative; }
+      .bar .seg-sold { background: var(--orange); border-radius: 7px 0 0 7px; height: 100%; }
+      .bar .seg-proj { background: var(--orange-soft); height: 100%; }
+      .goal-marker { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--gold); }
+      .goal-label { position: absolute; top: -24px; transform: translateX(-50%); font-size: 12px; font-weight: 800; white-space: nowrap; }
+      .bar-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 12px; font-size: 13.5px; color: var(--ink-2); }
+      .bar-legend .sw { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+      .bar-legend .spacer { flex: 1; }
+      .bar-legend .sponsor { color: var(--ink-3); }
+      .capacity-note { margin: 12px 0 0; font-size: 13.5px; color: var(--alert-ink); background: var(--alert-bg); border: 1px solid var(--alert-line); border-radius: 9px; padding: 9px 12px; }
+
+      /* ---------- free sign-ups (shown, never counted) ---------- */
+      .signup-card { color: var(--ink-2); }
+      .signup-head { display: flex; justify-content: space-between; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+      .signup-card h3 { color: var(--ink-2); }
+      .free-pill { font-size: 10.5px; font-weight: 800; letter-spacing: .1em; color: var(--ink-2); background: var(--track); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+      .signup-body { display: flex; align-items: center; gap: 22px; margin-top: 12px; flex-wrap: wrap; }
+      .signup-n { font-size: 54px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--ink-2); }
+      .signup-name { font-size: 16px; font-weight: 700; color: var(--ink); margin: 0; }
+      .signup-card .cap { margin-top: 4px; max-width: 580px; }
+      tr.signup-row td { color: var(--ink-2); border-top: 2px solid var(--line); }
+      .not-counted { font-size: 12.5px; color: var(--ink-3); font-weight: 600; white-space: nowrap; }
+
+      /* ---------- callout ---------- */
+      .callout { border-radius: 14px; padding: 18px 22px; margin-top: 16px; font-size: 17px; font-weight: 600; line-height: 1.5; border: 1px solid; }
+      .callout.alert { background: var(--alert-bg); border-color: var(--alert-line); color: var(--alert-ink); }
+      .callout.good { background: var(--good-bg); border-color: var(--good-line); color: var(--good-ink); }
+
+      /* ---------- metric cards ---------- */
+      .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+      .metric { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+      .metric .k { font-size: 11.5px; font-weight: 800; letter-spacing: .13em; color: var(--ink-3); }
+      .metric .v { font-size: 34px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; margin-top: 5px; }
+      .metric .s { font-size: 13px; color: var(--ink-2); margin-top: 3px; }
+
+      /* ---------- tables ---------- */
+      .tbl-scroll { overflow-x: auto; margin: 6px -22px -6px; padding: 0 22px; }
+      table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+      th { text-align: left; font-size: 11.5px; font-weight: 800; letter-spacing: .11em; color: var(--ink-3); padding: 10px 10px 8px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+      td { padding: 10px 10px 10px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+      tr:last-child td { border-bottom: 0; }
+      td.num, th.num { text-align: right; padding-right: 0; padding-left: 10px; }
+      .share-cell { min-width: 150px; }
+      .share-bar { height: 8px; border-radius: 4px; background: var(--track); position: relative; margin-bottom: 4px; }
+      .share-bar i { position: absolute; inset: 0 auto 0 0; background: var(--orange); border-radius: 4px; }
+      .share-pct { font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
+      .cls-name { font-weight: 600; }
+      .footnotes { margin: 12px 0 0; padding: 0; list-style: none; }
+      .footnotes li { font-size: 13.5px; color: var(--ink-2); padding: 3px 0 3px 16px; position: relative; }
+      .footnotes li::before { content: "—"; position: absolute; left: 0; color: var(--ink-3); }
+      .live-pill { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .1em; color: #fff; background: var(--orange); border-radius: 999px; padding: 2px 8px; margin-left: 8px; vertical-align: 2px; }
+      .size-cell { min-width: 130px; }
+      .size-bar { height: 10px; border-radius: 5px; background: var(--track); position: relative; }
+      .size-bar i { position: absolute; inset: 0 auto 0 0; background: var(--orange); border-radius: 5px; }
+      tr.live-row td { font-weight: 700; }
+
+      svg text { font-family: "Archivo", sans-serif; }
+      .chart-box { margin-top: 10px; }
+      .chart-box svg { display: block; width: 100%; height: auto; }
+
+      footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 26px; justify-content: space-between; }
+
+      @media (max-width: 760px) {
+        .metrics { grid-template-columns: repeat(2, 1fr); }
+        .city { font-size: 34px; }
+        .daysout .n { font-size: 64px; }
+        .daysout .u { font-size: 20px; }
+        h1 { font-size: 24px; }
+        .card { padding: 16px; }
+        .tbl-scroll { margin: 6px -16px -6px; padding: 0 16px; }
+        table { font-size: 12.5px; }
+        th { white-space: normal; font-size: 10.5px; padding: 8px 6px 7px 0; }
+        td { padding: 8px 6px 8px 0; }
+        td.num, th.num { padding-left: 6px; }
+        .share-cell { min-width: 62px; }
+        .size-cell { min-width: 58px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="page-head">
+        <h1>AltSocial Ticket Desk</h1>
+        <div class="tabs" role="tablist" id="tabs"></div>
+      </div>
+      <main id="event-root"></main>
+      <footer>
+        <span>Built from the SweatPals attendee export</span>
+        <span id="built-line"></span>
+      </footer>
+    </div>
+
+    <script>
+      /* ================================================================
+         DASHBOARD DATA — the daily refresh replaces ONLY this block.
+         One object per event with every figure the page displays,
+         computed from that morning's SweatPals attendee CSV exports
+         (aggregates only — no attendee details ever appear here).
+         Sponsor / prospective-sponsor tickets are excluded throughout.
+         free_signups lists free sign-ups for separate activities (the DJ
+         Run): shown in their own section and in the class table, but
+         never counted in sold, the progress bar, the goal, projections,
+         or revenue.
+         ================================================================ */
+      window.DASHBOARD_DATA = {
+        "built_at": "Tue, Oct 20, 2026 · 8:02 AM ET",
+        "events": [
+          {
+            "id": "tampa",
+            "tab_label": "Tampa",
+            "city": "Tampa",
+            "event_name": "AltSocial Wellness Club — Race Weekend",
+            "date_label": "Saturday, October 24, 2026",
+            "event_date": "2026-10-24",
+            "venue": "Armature Works",
+            "data_as_of": "Tue, Oct 20 at 8:02 AM",
+            "days_out": 4,
+            "sold": 199,
+            "capacity": 630,
+            "pct_sold": 32,
+            "goal": 500,
+            "sponsor_tickets": 0,
+            "capacity_note": null,
+            "projected": 267,
+            "projected_range": [219, 343],
+            "to_goal": 301,
+            "per_day_needed": "75.2",
+            "projection_clears": false,
+            "last_full_day": { "value": 21, "label": "Mon, Oct 19" },
+            "pace_rank": null,
+            "audience": 109,
+            "revenue": 4395.5,
+            "orders": 218,
+            "paid": 137,
+            "free": 62,
+            "daily_range_label": "SEP 25 — LAST EXPORT",
+            "daily_series": [
+              ["2026-09-25", 2], ["2026-09-26", 1], ["2026-09-27", 0], ["2026-09-28", 0],
+              ["2026-09-29", 2], ["2026-09-30", 1], ["2026-10-01", 0], ["2026-10-02", 2],
+              ["2026-10-03", 7], ["2026-10-04", 0], ["2026-10-05", 8], ["2026-10-06", 28],
+              ["2026-10-07", 11], ["2026-10-08", 8], ["2026-10-09", 6], ["2026-10-10", 0],
+              ["2026-10-11", 3], ["2026-10-12", 0], ["2026-10-13", 5], ["2026-10-14", 36],
+              ["2026-10-15", 9], ["2026-10-16", 15], ["2026-10-17", 7], ["2026-10-18", 26],
+              ["2026-10-19", 21], ["2026-10-20", 1]
+            ],
+            "tiers": [
+              { "name": "General Admission", "tickets": 80, "share": 40.2, "revenue": 1971.5, "per_paid": 28.16, "variants": [] },
+              { "name": "VKTRY HIIT", "tickets": 52, "share": 26.1, "revenue": 0, "per_paid": null, "variants": [] },
+              { "name": "GA + BODYROK Mat Pilates", "tickets": 35, "share": 17.6, "revenue": 1289, "per_paid": 36.83, "variants": [] },
+              { "name": "GA + VKTRY HIIT", "tickets": 21, "share": 10.6, "revenue": 744, "per_paid": 35.43, "variants": [] },
+              { "name": "GA + Crunch Fitness Ass and Abs", "tickets": 6, "share": 3.0, "revenue": 214, "per_paid": 35.67, "variants": [] },
+              { "name": "Behind The Bike Cycling", "tickets": 3, "share": 1.5, "revenue": 97, "per_paid": 32.33, "variants": [] },
+              { "name": "GA + Crunch Group Fitness", "tickets": 2, "share": 1.0, "revenue": 80, "per_paid": 40.00, "variants": [] }
+            ],
+            "class_footnote": "Counts as admission — 199 tickets, of which 119 chose a class and 80 general admission",
+            "excluded_footnote": "The DJ Run is a free sign-up, not admission — 121 sign-ups, shown in their own section above and excluded from every total on this page",
+            "free_signups": [
+              { "title": "DJ Run sign-ups", "name": "9am Pre-Event DJ Run — DJ Barbosa", "signups": 121,
+                "note": "Free sign-ups for the 9am pre-event run, tracked on their own. They are not in tickets sold, the progress bar above, the sales goal, or revenue." }
+            ],
+            "history": [
+              { "date": "Oct 24, 2026", "venue": "Armature Works", "tickets": 199, "live": true },
+              { "date": "Oct 3, 2026", "venue": "Armature Works", "tickets": 365, "live": false },
+              { "date": "Sep 5, 2026", "venue": "Armature Works", "tickets": 872, "live": false },
+              { "date": "Aug 8, 2026", "venue": "Armature Works", "tickets": 665, "live": false },
+              { "date": "Jul 11, 2026", "venue": "Armature Works", "tickets": 664, "live": false },
+              { "date": "Jun 6, 2026", "venue": "Armature Works", "tickets": 627, "live": false }
+            ]
+          },
+          {
+            "id": "orlando",
+            "tab_label": "Orlando",
+            "city": "Orlando",
+            "event_name": "AltSocial Wellness Club",
+            "date_label": "Saturday, November 14, 2026",
+            "event_date": "2026-11-14",
+            "venue": "The Acre Orlando",
+            "data_as_of": "Tue, Oct 20 at 8:02 AM",
+            "days_out": 25,
+            "sold": 218,
+            "capacity": 915,
+            "pct_sold": 24,
+            "goal": 500,
+            "sponsor_tickets": 0,
+            "capacity_note": "Capacity not confirmed — no capacity on file for this event, so a default is standing in. Treat the percentage as unconfirmed.",
+            "projected": 725,
+            "projected_range": [218, 1593],
+            "to_goal": 282,
+            "per_day_needed": "11.3",
+            "projection_clears": true,
+            "last_full_day": { "value": 0, "label": "Mon, Oct 19" },
+            "pace_rank": null,
+            "audience": 156,
+            "revenue": 8623,
+            "orders": 157,
+            "paid": 218,
+            "free": 0,
+            "daily_range_label": "OCT 10 — LAST EXPORT",
+            "daily_series": [
+              ["2026-10-10", 17], ["2026-10-11", 4], ["2026-10-12", 54], ["2026-10-13", 55],
+              ["2026-10-14", 24], ["2026-10-15", 48], ["2026-10-16", 0], ["2026-10-17", 12],
+              ["2026-10-18", 3], ["2026-10-19", 0], ["2026-10-20", 1]
+            ],
+            "tiers": [
+              { "name": "GA + Goat Yoga by Alaska Farms", "tickets": 80, "share": 36.7, "revenue": 3192, "per_paid": 39.90, "variants": [] },
+              { "name": "GA + Puppies & Pilates", "tickets": 80, "share": 36.7, "revenue": 3208, "per_paid": 40.10, "variants": [] },
+              { "name": "General Admission", "tickets": 23, "share": 10.6, "revenue": 752, "per_paid": 32.70, "variants": [] },
+              { "name": "GA + Crunch Fitness Puppies & Pilates", "tickets": 16, "share": 7.3, "revenue": 740, "per_paid": 46.25, "variants": [] },
+              { "name": "GA + Crunch Fitness HIIT", "tickets": 12, "share": 5.5, "revenue": 472, "per_paid": 39.33, "variants": [] },
+              { "name": "General Admission + Puppies & Pilates Group", "tickets": 7, "share": 3.2, "revenue": 259, "per_paid": 37.00, "variants": [] }
+            ],
+            "class_footnote": "Counts as admission — 218 tickets, of which 195 chose a class and 23 general admission",
+            "excluded_footnote": null,
+            "free_signups": [],
+            "history": [
+              { "date": "Nov 14, 2026", "venue": "The Acre Orlando", "tickets": 218, "live": true },
+              { "date": "Oct 10, 2026", "venue": "Conrad Orlando at Evermore", "tickets": 429, "live": false },
+              { "date": "Sep 12, 2026", "venue": "Omni Orlando Resort at ChampionsGate", "tickets": 546, "live": false },
+              { "date": "Aug 15, 2026", "venue": "Paradise Cove Orlando", "tickets": 787, "live": false },
+              { "date": "Jul 18, 2026", "venue": "Paradise Cove Orlando", "tickets": 565, "live": false },
+              { "date": "Jun 20, 2026", "venue": "The Acre Orlando", "tickets": 657, "live": false },
+              { "date": "May 23, 2026", "venue": "The Ritz-Carlton Orlando", "tickets": 790, "live": false },
+              { "date": "Apr 25, 2026", "venue": "Omni Orlando Resort at ChampionsGate", "tickets": 812, "live": false },
+              { "date": "Apr 4, 2026", "venue": "Paradise Cove Orlando", "tickets": 624, "live": false },
+              { "date": "Mar 7, 2026", "venue": "Boxi Park Sand Volleyball Courts", "tickets": 741, "live": false },
+              { "date": "Feb 7, 2026", "venue": "Kia Center", "tickets": 618, "live": false },
+              { "date": "Jan 10, 2026", "venue": "The Vanguard", "tickets": 596, "live": false },
+              { "date": "Dec 6, 2025", "venue": "The Ritz-Carlton Orlando", "tickets": 521, "live": false },
+              { "date": "Nov 8, 2025", "venue": "The Acre Orlando", "tickets": 594, "live": false },
+              { "date": "Oct 11, 2025", "venue": "Orlando", "tickets": 619, "live": false },
+              { "date": "Sep 13, 2025", "venue": "The Acre Orlando", "tickets": 538, "live": false },
+              { "date": "Aug 23, 2025", "venue": "The Acre Orlando", "tickets": 536, "live": false },
+              { "date": "Aug 2, 2025", "venue": "The Acre Orlando", "tickets": 536, "live": false },
+              { "date": "Jul 12, 2025", "venue": "The Acre Orlando", "tickets": 507, "live": false },
+              { "date": "Jun 14, 2025", "venue": "The Acre Orlando", "tickets": 400, "live": false }
+            ]
+          }
+        ]
+      };
+      /* ================= END DASHBOARD DATA ================= */
+
+      (function () {
+        var DATA = window.DASHBOARD_DATA;
+        var ORANGE = "#e85a17";
+        var root = document.getElementById("event-root");
+        var tabsEl = document.getElementById("tabs");
+        document.getElementById("built-line").textContent =
+          "Page built " + DATA.built_at + " · aggregates only, no attendee details";
+
+        function fmt(n) { return n.toLocaleString("en-US"); }
+        function money(n) { return "$" + fmt(n); }
+        function money2(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function esc(s) {
+          return String(s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+          });
+        }
+        function cssVar(name) {
+          return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        /* ---------- tabs ---------- */
+        DATA.events.forEach(function (ev, i) {
+          var b = document.createElement("button");
+          b.className = "tab";
+          b.setAttribute("role", "tab");
+          b.setAttribute("aria-selected", i === 0 ? "true" : "false");
+          b.innerHTML = esc(ev.tab_label) + " <span class=\"d\">" + ev.days_out + "d</span>";
+          b.addEventListener("click", function () { select(i); });
+          tabsEl.appendChild(b);
+        });
+        function select(i) {
+          var tabs = tabsEl.children;
+          for (var j = 0; j < tabs.length; j++) tabs[j].setAttribute("aria-selected", j === i ? "true" : "false");
+          render(DATA.events[i]);
+        }
+
+        /* ---------- charts ---------- */
+        function dailyChart(ev) {
+          var W = 960, H = 240, padL = 34, padB = 24, padT = 14;
+          var iw = W - padL - 8, ih = H - padB - padT;
+          var max = Math.max.apply(null, ev.daily_series.map(function (d) { return d[1]; }));
+          var yMax = Math.ceil(max * 1.15 / 10) * 10 || 10;
+          var n = ev.daily_series.length;
+          var bw = iw / n;
+          var ink3 = cssVar("--ink-3"), line = cssVar("--line");
+          var s = "<svg viewBox=\"0 0 " + W + " " + H + "\" role=\"img\" aria-label=\"Bar chart of tickets sold per day\">";
+          [0, 0.5, 1].forEach(function (f) {
+            var y = padT + ih * (1 - f);
+            s += "<line x1=\"" + padL + "\" y1=\"" + y + "\" x2=\"" + (W - 8) + "\" y2=\"" + y + "\" stroke=\"" + line + "\" stroke-width=\"1\"/>";
+            s += "<text x=\"" + (padL - 6) + "\" y=\"" + (y + 4) + "\" text-anchor=\"end\" font-size=\"11\" fill=\"" + ink3 + "\">" + Math.round(yMax * f) + "</text>";
+          });
+          ev.daily_series.forEach(function (d, i) {
+            var h = ih * d[1] / yMax;
+            var x = padL + i * bw + bw * 0.16, w = bw * 0.68;
+            var y = padT + ih - h;
+            s += "<rect x=\"" + x.toFixed(1) + "\" y=\"" + y.toFixed(1) + "\" width=\"" + w.toFixed(1) + "\" height=\"" + Math.max(h, d[1] ? 2 : 0).toFixed(1) + "\" rx=\"2.5\" fill=\"" + ORANGE + "\"><title>" + d[0] + ": " + d[1] + " tickets</title></rect>";
+          });
+          function xLabel(i) {
+            var dt = new Date(ev.daily_series[i][0] + "T12:00:00");
+            return dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          }
+          var li = [0, Math.floor((n - 1) / 2), n - 1];
+          li.forEach(function (i) {
+            var x = padL + i * bw + bw / 2;
+            var anchor = i === 0 ? "start" : (i === n - 1 ? "end" : "middle");
+            s += "<text x=\"" + x.toFixed(1) + "\" y=\"" + (H - 6) + "\" text-anchor=\"" + anchor + "\" font-size=\"11.5\" fill=\"" + ink3 + "\">" + xLabel(i) + "</text>";
+          });
+          return s + "</svg>";
+        }
+
+        function paceChart(ev) {
+          var W = 960, H = 300, padL = 40, padR = 14, padB = 26, padT = 16;
+          var iw = W - padL - padR, ih = H - padB - padT;
+          var maxOut = ev.days_out + (ev.daily_series.length - 1);
+          var cum = 0, pts = [];
+          ev.daily_series.forEach(function (d, i) {
+            cum += d[1];
+            pts.push([maxOut - i, cum]);
+          });
+          var ink3 = cssVar("--ink-3"), line = cssVar("--line"),
+              grey = cssVar("--grey-line"), gold = cssVar("--gold");
+          function X(daysOut) { return padL + iw * (maxOut - daysOut) / maxOut; }
+          function Y(v) { return padT + ih * (1 - v / ev.capacity); }
+          var s = "<svg viewBox=\"0 0 " + W + " " + H + "\" role=\"img\" aria-label=\"Line chart of cumulative tickets sold by days before the event\">";
+          [0, 250, 500, 750].forEach(function (v) {
+            if (v > ev.capacity) return;
+            var y = Y(v);
+            s += "<line x1=\"" + padL + "\" y1=\"" + y + "\" x2=\"" + (W - padR) + "\" y2=\"" + y + "\" stroke=\"" + line + "\"/>";
+            s += "<text x=\"" + (padL - 7) + "\" y=\"" + (y + 4) + "\" text-anchor=\"end\" font-size=\"11\" fill=\"" + ink3 + "\">" + v + "</text>";
+          });
+          /* capacity (dashed) */
+          s += "<line x1=\"" + padL + "\" y1=\"" + Y(ev.capacity) + "\" x2=\"" + (W - padR) + "\" y2=\"" + Y(ev.capacity) + "\" stroke=\"" + grey + "\" stroke-width=\"1.6\" stroke-dasharray=\"6 5\"/>";
+          s += "<text x=\"" + (W - padR) + "\" y=\"" + (Y(ev.capacity) - 7) + "\" text-anchor=\"end\" font-size=\"11.5\" font-weight=\"700\" fill=\"" + ink3 + "\">Capacity " + fmt(ev.capacity) + "</text>";
+          /* goal (solid) */
+          s += "<line x1=\"" + padL + "\" y1=\"" + Y(ev.goal) + "\" x2=\"" + (W - padR) + "\" y2=\"" + Y(ev.goal) + "\" stroke=\"" + gold + "\" stroke-width=\"1.6\"/>";
+          s += "<text x=\"" + (W - padR) + "\" y=\"" + (Y(ev.goal) - 7) + "\" text-anchor=\"end\" font-size=\"11.5\" font-weight=\"700\" fill=\"" + ink3 + "\">Goal " + fmt(ev.goal) + "</text>";
+          /* live line */
+          var dAttr = pts.map(function (p, i) { return (i ? "L" : "M") + X(p[0]).toFixed(1) + " " + Y(p[1]).toFixed(1); }).join(" ");
+          s += "<path d=\"" + dAttr + "\" fill=\"none\" stroke=\"" + ORANGE + "\" stroke-width=\"2.6\" stroke-linejoin=\"round\"/>";
+          var last = pts[pts.length - 1];
+          s += "<circle cx=\"" + X(last[0]).toFixed(1) + "\" cy=\"" + Y(last[1]).toFixed(1) + "\" r=\"4.5\" fill=\"" + ORANGE + "\"/>";
+          s += "<text x=\"" + X(last[0]).toFixed(1) + "\" y=\"" + (Y(last[1]) - 12) + "\" text-anchor=\"end\" font-size=\"12.5\" font-weight=\"800\" fill=\"" + ORANGE + "\">" + fmt(last[1]) + " sold · " + last[0] + "d out</text>";
+          /* x axis */
+          s += "<text x=\"" + padL + "\" y=\"" + (H - 7) + "\" font-size=\"11.5\" fill=\"" + ink3 + "\">" + maxOut + " days out</text>";
+          s += "<text x=\"" + (W - padR) + "\" y=\"" + (H - 7) + "\" text-anchor=\"end\" font-size=\"11.5\" fill=\"" + ink3 + "\">event day</text>";
+          return s + "</svg>";
+        }
+
+        /* ---------- render ---------- */
+        function render(ev) {
+          var html = "";
+          html += "<p class=\"eyebrow\">LIVE EVENT</p>";
+          html += "<h2 class=\"city\">" + esc(ev.city) + "</h2>";
+          html += "<p class=\"event-line\">" + esc(ev.date_label) + " · " + esc(ev.venue) + "</p>";
+          html += "<p class=\"asof\">Data as of " + esc(ev.data_as_of) + "</p>";
+
+          html += "<div class=\"daysout\"><span class=\"n\">" + ev.days_out + "</span><span class=\"u\">DAYS OUT</span></div>";
+
+          /* capacity */
+          var soldW = (ev.sold / ev.capacity * 100).toFixed(2);
+          var projW = (Math.max(ev.projected - ev.sold, 0) / ev.capacity * 100).toFixed(2);
+          var goalL = (ev.goal / ev.capacity * 100).toFixed(2);
+          html += "<section class=\"card\">";
+          html += "<p class=\"sold-line\"><b>" + fmt(ev.sold) + "</b> of " + fmt(ev.capacity) + " tickets sold — " + ev.pct_sold + "% of capacity</p>";
+          html += "<div class=\"bar-wrap\"><div class=\"bar\">";
+          html += "<div class=\"seg-sold\" style=\"width:" + soldW + "%\"></div>";
+          html += "<div class=\"seg-proj\" style=\"width:" + projW + "%\"></div>";
+          html += "<div class=\"goal-marker\" style=\"left:" + goalL + "%\"></div>";
+          html += "<div class=\"goal-label\" style=\"left:" + goalL + "%\">Goal " + fmt(ev.goal) + "</div>";
+          html += "</div>";
+          html += "<div class=\"bar-legend\">"
+            + "<span><span class=\"sw\" style=\"background:var(--orange)\"></span>Sold — " + fmt(ev.sold) + "</span>"
+            + "<span><span class=\"sw\" style=\"background:var(--orange-soft)\"></span>Projected by event day — ~" + fmt(ev.projected) + "</span>"
+            + "<span class=\"spacer\"></span>"
+            + "<span class=\"sponsor\">Sponsor tickets: " + fmt(ev.sponsor_tickets) + "</span></div>";
+          if (ev.capacity_note) html += "<p class=\"capacity-note\">" + esc(ev.capacity_note) + "</p>";
+          html += "</section>";
+
+          /* free sign-ups (e.g. DJ Run) — shown in their own section, never counted in sold, the bar, the goal, or revenue */
+          if (ev.free_signups && ev.free_signups.length) {
+            ev.free_signups.forEach(function (fs) {
+              html += "<section class=\"card signup-card\">";
+              html += "<div class=\"signup-head\"><h3>" + esc(fs.title) + "</h3><span class=\"free-pill\">FREE SIGN-UP · NOT ADMISSION</span></div>";
+              html += "<div class=\"signup-body\"><div class=\"signup-n\">" + fmt(fs.signups) + "</div>"
+                + "<div><p class=\"signup-name\">" + esc(fs.name) + "</p>"
+                + "<p class=\"cap\">" + esc(fs.note) + "</p></div></div>";
+              html += "</section>";
+            });
+          }
+
+          /* callout */
+          var outcome = ev.projection_clears ? "which clears it." : "which would fall short.";
+          html += "<div class=\"callout " + (ev.projection_clears ? "good" : "alert") + "\">"
+            + fmt(ev.to_goal) + " tickets short of the " + fmt(ev.goal) + " goal with " + ev.days_out
+            + " days left — that is " + ev.per_day_needed + "/day from here. Projection lands at ~"
+            + fmt(ev.projected) + ", " + outcome + "</div>";
+
+          /* metric cards */
+          var cards = [
+            { k: "LAST FULL DAY", v: fmt(ev.last_full_day.value), s: ev.last_full_day.label },
+            { k: "TO GOAL", v: fmt(ev.to_goal), s: ev.per_day_needed + "/day needed" },
+            { k: "PROJECTED FINAL", v: "~" + fmt(ev.projected), s: "range " + fmt(ev.projected_range[0]) + "–" + fmt(ev.projected_range[1]) },
+            { k: "PACE RANK", v: ev.pace_rank ? String(ev.pace_rank) : "—", s: "at this days-out" },
+            { k: "AUDIENCE", v: ev.audience ? fmt(ev.audience) : "—", s: "guests on file" },
+            { k: "REVENUE", v: money(ev.revenue), s: money(ev.revenue) + " net · " + fmt(ev.orders) + " orders" },
+            { k: "PAID VS FREE", v: fmt(ev.paid) + " / " + fmt(ev.free), s: "tickets · free = $0 orders" }
+          ];
+          html += "<div class=\"metrics\">" + cards.map(function (c) {
+            return "<div class=\"metric\"><div class=\"k\">" + c.k + "</div><div class=\"v\">" + c.v + "</div><div class=\"s\">" + esc(c.s) + "</div></div>";
+          }).join("") + "</div>";
+
+          /* daily chart */
+          html += "<section class=\"card\"><div class=\"chart-head\"><h3>Tickets sold per day</h3>"
+            + "<span class=\"chart-range\">" + esc(ev.daily_range_label) + "</span></div>"
+            + "<div class=\"chart-box\">" + dailyChart(ev) + "</div>"
+            + "<p class=\"cap\">Every ticket, counted on the day it was bought in Eastern time. This is the line that should move after a post goes out.</p></section>";
+
+          /* class table */
+          var maxShare = Math.max.apply(null, ev.tiers.map(function (t) { return t.share; }));
+          html += "<section class=\"card\"><h3>Which class is selling</h3><div class=\"tbl-scroll\"><table>";
+          html += "<tr><th>CLASS</th><th>SHARE</th><th class=\"num\">TICKETS</th><th class=\"num\">REVENUE</th><th class=\"num\">PER PAID TICKET</th></tr>";
+          ev.tiers.forEach(function (t) {
+            html += "<tr><td class=\"cls-name\">" + esc(t.name) + "</td>"
+              + "<td class=\"share-cell\"><div class=\"share-bar\"><i style=\"width:" + (t.share / maxShare * 100).toFixed(1) + "%\"></i></div><span class=\"share-pct\">" + t.share.toFixed(1) + "%</span></td>"
+              + "<td class=\"num\">" + fmt(t.tickets) + "</td>"
+              + "<td class=\"num\">" + money(t.revenue) + "</td>"
+              + "<td class=\"num\">" + (t.per_paid == null ? "—" : money2(t.per_paid)) + "</td></tr>";
+          });
+          if (ev.free_signups && ev.free_signups.length) {
+            ev.free_signups.forEach(function (fs) {
+              html += "<tr class=\"signup-row\"><td class=\"cls-name\">" + esc(fs.name) + "</td>"
+                + "<td class=\"share-cell\"><span class=\"not-counted\">not counted</span></td>"
+                + "<td class=\"num\">" + fmt(fs.signups) + "</td>"
+                + "<td class=\"num\">" + money(0) + "</td>"
+                + "<td class=\"num\">—</td></tr>";
+            });
+          }
+          html += "</table></div>";
+          html += "<ul class=\"footnotes\"><li>" + esc(ev.class_footnote) + "</li>";
+          if (ev.excluded_footnote) html += "<li>" + esc(ev.excluded_footnote) + "</li>";
+          ev.tiers.forEach(function (t) {
+            if (t.variants && t.variants.length > 1) {
+              var parts = t.variants.map(function (v) { return v[0] + " × &lsquo;" + esc(v[1]) + "&rsquo;"; }).join(" + ");
+              html += "<li>" + esc(t.name) + " = " + parts + "</li>";
+            }
+          });
+          html += "</ul></section>";
+
+          /* pace chart */
+          html += "<section class=\"card\"><h3>Pace against past events</h3>"
+            + "<div class=\"chart-box\">" + paceChart(ev) + "</div>"
+            + "<p class=\"cap\">Each line is one past event in this market, plotted by how many days remained before its doors opened. Are we ahead of where we normally are?</p></section>";
+
+          /* history */
+          var maxT = Math.max.apply(null, ev.history.map(function (h) { return h.tickets; }));
+          html += "<section class=\"card\"><h3>Every event so far</h3><div class=\"tbl-scroll\"><table>";
+          html += "<tr><th>EVENT</th><th>VENUE</th><th class=\"num\">TICKETS</th><th>RELATIVE SIZE</th></tr>";
+          ev.history.forEach(function (h) {
+            html += "<tr" + (h.live ? " class=\"live-row\"" : "") + "><td>" + esc(h.date) + (h.live ? "<span class=\"live-pill\">LIVE</span>" : "") + "</td>"
+              + "<td>" + esc(h.venue) + "</td>"
+              + "<td class=\"num\">" + fmt(h.tickets) + "</td>"
+              + "<td class=\"size-cell\"><div class=\"size-bar\"><i style=\"width:" + (h.tickets / maxT * 100).toFixed(1) + "%\"></i></div></td></tr>";
+          });
+          html += "</table></div></section>";
+
+          root.innerHTML = html;
+        }
+
+        render(DATA.events[0]);
+      })();
+    </script>
+  </body>
+</html>
